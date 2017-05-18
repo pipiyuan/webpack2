@@ -1,0 +1,97 @@
+.container-1200{
+	width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+nav .nav-header{
+	max-width:1920px;
+	min-width: 1200px;
+	margin: 0 auto; 
+	background-color: #f8f8f8;
+	height: 80px;
+	overflow: hidden;
+}
+.nav-header .nav-bar a{
+	display: block;
+	margin-top: 21px;
+}
+
+.bodyer .container{
+	width: 1366px;
+	margin: 0 auto;
+	background: url(../images/login_banner-1.jpg) no-repeat center top;
+	height: 500px;
+}
+.bodyer form{
+	padding: 30px 20px 50px;
+	height: 380px;
+	width: 350px;
+	background-color: #fff;
+	float: right;
+	margin-right: 60px;
+	margin-top: 60px;
+}
+
+.bodyer form h4{
+	font-weight: bold;
+	// border-bottom: 1px solid #e5e5e5;
+}
+.bodyer form .border-bottom{
+	width: 100%;
+	height: 1px;
+	background-color: #e5e5e5;
+}
+.bodyer form .input{
+	padding: 30px 0;
+}
+.bodyer form p{
+	border:2px solid #e5e5e5;
+	padding: 10px 10px;
+	margin-bottom: 20px;
+}
+.bodyer form p input{
+	outline: none;
+	border: none;
+}
+.bodyer form p i{
+	display: inline-block;
+	vertical-align: top;
+	height: 20px;
+	width:13px;
+	margin-right: 6px;
+	background: url(../images/username-2.png) no-repeat center;
+}
+
+.bodyer form>a{
+	font-weight: bold;
+	font-size: 12px;
+	color: #0084cf;
+	float: right;
+	margin-bottom: 10px;
+}
+.bodyer form button.btn{
+	background-color: #0084cf;
+	border-radius: 0;
+	width: 100%;
+	color: #fff;
+	font-weight: bold;
+	padding: 8px 12px;
+}
+.bodyer form button:hover{
+	color: #fff;
+}
+.bodyer .circle{
+	position: absolute;
+	top: 530px;
+	left: 50%
+}
+.bodyer .circle p{
+	height: 20px;
+	width: 20px;
+	border-radius: 50%;
+	border: 1px solid #eee;
+	background-color: pink;
+	display: inline-block;
+	margin-left: 10px;
+	cursor: pointer;
+}

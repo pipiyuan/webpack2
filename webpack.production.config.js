@@ -1,0 +1,201 @@
+const webpack = require('webpack');
+const path = require('path');
+const htmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const glob = require('glob');
+
+// 获取 js文件目录下的 所有js文件，返回的是路径 数组
+const files = glob.sync('./src/js/**/*.js');
+let entries = {};
+	files.forEach(function (value, index, arrary) {
+		entries[path.basename(value, '.js')] = value;
+	});
+entries.main = './src/main.js';
+
+module.exports = {
+	// devtool: 'eval-source-map',
+	entry: {
+		main: './src/main.js',
+		venders: files
+	}, 
+	output: {
+		// publicPath: '/', 
+		path: path.resolve(__dirname, 'build'),	//打包后的文件存放的地方
+		filename: 'js/[name].js'			//打包后输出文件的文件名
+	},
+	module: {
+		rules: [
+			{
+				test: /\.css$/, 
+				exclude: /node_modules/,
+				include: [
+					path.resolve(__dirname, 'src/style')
+				],
+				use: ExtractTextPlugin.extract({
+					fallback: 'style-loader', 
+					use: [
+						{
+							loader: 'css-loader',
+							options: {
+								url: false //启用/禁用url（）处理
+							}
+						},
+						'postcss-loader'
+					]
+				})
+			},
+			{
+				test: /\.less$/, 
+				exclude: /node_modules/,
+				include: [
+					path.resolve(__dirname, 'src/style')
+				],
+				use: ExtractTextPlugin.extract({
+					fallback: 'style-loader', 
+					// use: ['css-loader', 'postcss-loader', 'less-loader']
+					use: [
+						{
+							loader: 'css-loader',
+							options: {
+								url: false //启用/禁用url（）处理
+							}
+						},
+						'postcss-loader', 
+						'less-loader'
+					]
+				})
+			},
+			{
+				test: /\.(js)$/, 
+				exclude: /node_modules/, 
+				include: [
+					path.resolve(__dirname, 'src/') //main.js src
+				],
+				loader: 'babel-loader',
+				query: {
+					presets: ['es2015']
+				}
+			},
+			// {
+			// 	test: /\.(js|jsx)$/, 
+			// 	exclude: /node_modules/, 
+			// 	include: [
+			// 		path.resolve(__dirname, 'src/js')
+			// 	],
+			// 	loader: 'babel-loader',
+			// 	query: {
+			// 		presets: ['es2015', 'react']
+			// 	}
+			// },
+			// {
+			// 	test: /\.pug$/,
+			// 	loader: 'pug-loader',
+			// 	options: {
+			// 		pretty: true
+			// 	}
+			// },
+			{
+				test: /\.html$/,
+				loader: 'html-loader',
+				options: {
+					minimize: true
+				}
+			},
+			{
+				test: /\.(jpe?g|png|gif|svg)$/i,
+				exclude: /node_modules/,
+				include: [
+					path.resolve(__dirname, 'src/images')
+				],
+				use: [
+					{
+						loader: 'file-loader',
+						options: {
+							name: 'images/[name].[ext]'
+						}
+					},
+					{
+						loader: 'image-webpack-loader',
+						options: {
+							progressive: true,
+							pngquant: {
+								quality: '65-90',
+								speed: 4
+							}
+						}
+					}	
+				]
+			}
+		]
+	},
+	plugins: [
+		
+    	new webpack.optimize.UglifyJsPlugin({
+    		comments: false,        //去掉注释
+	        compress: {
+	            warnings: false    //忽略警告,要不然会有一大堆的黄色字体出现……
+	        }
+    	}), //压缩你的js代码
+		new webpack.BannerPlugin('This file is created by pp'),
+		new htmlWebpackPlugin({
+			template:__dirname+'/src/index.html',
+			hash: true,  //给生成的 js 文件一个独特的 hash 值
+			minify: {
+				removeComments: true,        //去注释
+	            collapseWhitespace: true,    //压缩空格
+	            removeAttributeQuotes: true  //去除属性引用
+			},
+			// title: 'Hello World app', // 如果你既指定了 template 选项，又指定了 title 选项,默认模板文件的 title, 即使你的模板文件中未设置 title。
+		    // template: path.resolve(TEM_PATH, 'index.html'),
+		    // filename: 'index.html',
+		    // //chunks这个参数告诉插件要引用entry里面的哪几个入口
+		    // chunks: ['app', 'vendors'],
+		    // //要把script插入到标签里
+		    // inject: 'head'
+		    // favicon 
+		}),
+		new webpack.HotModuleReplacementPlugin(),
+		new webpack.optimize.CommonsChunkPlugin('venders'),
+		new webpack.ProvidePlugin({ //把一个全局变量插入到所有的代码中
+			$: "jquery",
+			jQuery: "jquery",
+			"window.jQuery": "jquery"
+		}),
+		new ExtractTextPlugin({
+			filename:'style/[name]-[id].css',
+			allChunks: true
+		})
+	],
+	resolve: {
+        extensions: ['.js', '.jsx', '.less', '.scss', '.css'], //后缀名自动补全
+    },
+	/*devServer: {
+		contentBase: './src',	//本地服务器所加载的页面所在的目录
+		port: '8080',
+		open: true,
+	    historyApiFallback: true,	//不跳转; 在开发单页应用时非常有用，它依赖于HTML5 history API，如果设置为true，所有的跳转将指向index.html
+	    inline: true,				//实时刷新
+	    // proxy: {
+	    // 	'/api/*':{
+	    // 		target: 'http://m.maoyan.com',
+	    // 		changeOrigin: true,
+	    // 		pathRewrite: {'^/api': ''},
+	    // 	}
+	    // }
+	}*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
