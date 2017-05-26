@@ -219,24 +219,29 @@ let config = {
 
 // 遍历所有.html文件，使用HtmlWebpackPlugin将资源文件引入html中
 const HTML_ROOT_PATH = './src/pages/';
-const htmlfiles = fs.readdirSync(HTML_ROOT_PATH);
-htmlfiles.forEach(function (item) {
-    let currentpath = path.join(HTML_ROOT_PATH, item);
-    //console.log(currentpath);
-    let extname = path.extname(currentpath);
-    if (fs.statSync(currentpath).isFile()) {
-        config.plugins.push(
-        	new HtmlWebpackPlugin({
-	            title: '',
-	            template: currentpath,
-	            filename: currentpath.replace("src", ""),
-	            minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
-	            //chunks: ['index', 'vendors'],   // 配置该html文件要添加的模块
-	            inject: 'body'
-        	})
-        )
-    }
-});
+const pagesState = fs.existsSync(HTML_ROOT_PATH); // 判断 pages 文件目录是否存在
+if (pagesState) {
+	const htmlfiles = fs.readdirSync(HTML_ROOT_PATH);
+	htmlfiles.forEach(function (item) {
+	    let currentpath = path.join(HTML_ROOT_PATH, item);
+	    //console.log(currentpath);
+	    let extname = path.extname(currentpath);
+	    if (fs.statSync(currentpath).isFile()) {
+	    	if (path.extname(currentpath) === "html" || path.extname(currentpath) === "jade" || path.extname(currentpath) === "pug") {
+		        config.plugins.push(
+		        	new HtmlWebpackPlugin({
+			            title: '',
+			            template: currentpath,
+			            filename: currentpath.replace("src", ""),
+			            minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
+			            //chunks: ['index', 'vendors'],   // 配置该html文件要添加的模块
+			            inject: 'body'
+		        	})
+		        )
+		    }
+	    }
+	});
+}
 
 module.exports = config;
 
