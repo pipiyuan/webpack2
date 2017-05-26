@@ -162,12 +162,12 @@ let config = {
 		}),
 		new webpack.HotModuleReplacementPlugin(), //热加载
 		new webpack.optimize.CommonsChunkPlugin('venders'),
-		new webpack.ProvidePlugin({ //把一个全局变量插入到所有的代码中 全局挂载
-			$: "jquery",
-			jQuery: "jquery",
-			"window.jQuery": "jquery",
-			// angular: 'angular',
-		}),
+		// new webpack.ProvidePlugin({ //把一个全局变量插入到所有的代码中 全局挂载
+		// 	$: "jquery",
+		// 	jQuery: "jquery",
+		// 	"window.jQuery": "jquery",
+		// 	// angular: 'angular',
+		// }),
 		new ExtractTextPlugin({
 			filename:'style/[name]-[id].css',
 			allChunks: true
