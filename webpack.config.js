@@ -1,29 +1,31 @@
-const webpack = require('webpack');
+const fs = require('fs');
 const path = require('path');
-const htmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const glob = require('glob');
+const webpack = require('webpack');
+const htmlWebpackPlugin = require('html-webpack-plugin');
+const copyWebpackPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-// 获取 js文件目录下的 所有js文件，返回的是路径 数组
-const files = glob.sync('./src/js/**/*.js');
-// entries 如果全是对心方式，则是每个库单独打包，数组则是除主入口，其他库打包到一个文件
-let entries = {};
-	files.forEach(function (value, index, arrary) {
-		entries[path.basename(value, '.js')] = value;
-	});
-	// files.push('angular');
-entries.main = './src/main.js';
+// // 获取 js文件目录下的 所有js文件，返回的是路径 数组
+// const files = glob.sync('./src/js/**/*.js');
+// // entries 如果全是对心方式，则是每个库单独打包，数组则是除主入口，其他库打包到一个文件
+// let entries = {};
+// 	files.forEach(function (value, index, arrary) {
+// 		entries[path.basename(value, '.js')] = value;
+// 	});
 
-module.exports = {
+//entries.main = './src/main.js';
+
+let config = {
 	devtool: 'eval-source-map',
 	entry: {
 		main: './src/main.js',
-		venders: files
+		// venders: files
 	}, 
 	output: {
 		// publicPath: '/', 
 		path: path.resolve(__dirname, 'build'),	//打包后的文件存放的地方
-		filename: 'js/[name].js',			//打包后输出文件的文件名
+		filename: 'entry/[name].js',			//打包后输出文件的文件名
 	},
 	module: {
 		rules: [
@@ -39,7 +41,8 @@ module.exports = {
 						{
 							loader: 'css-loader',
 							options: {
-								url: false //启用/禁用url（）处理
+								url: false, //启用/禁用url（）处理
+								minimize: false,
 							}
 						},
 						'postcss-loader'
@@ -59,7 +62,8 @@ module.exports = {
 						{
 							loader: 'css-loader',
 							options: {
-								url: false //启用/禁用url（）处理
+								url: false, //启用/禁用url（）处理
+								minimize: false,
 							}
 						},
 						'postcss-loader', 
@@ -156,7 +160,7 @@ module.exports = {
 		    // inject: 'head'
 		    // favicon 
 		}),
-		new webpack.HotModuleReplacementPlugin(),
+		new webpack.HotModuleReplacementPlugin(), //热加载
 		new webpack.optimize.CommonsChunkPlugin('venders'),
 		new webpack.ProvidePlugin({ //把一个全局变量插入到所有的代码中 全局挂载
 			$: "jquery",
@@ -167,7 +171,17 @@ module.exports = {
 		new ExtractTextPlugin({
 			filename:'style/[name]-[id].css',
 			allChunks: true
-		})
+		}),
+		// new copyWebpackPlugin([
+		// 	{
+		// 		from: __dirname+'/src/libs',
+		// 		to: 'libs/'	
+		// 	},
+		// 	{
+		// 		from: __dirname+'/src/style/third_party/',
+		// 		to: 'style/third_party/'	
+		// 	},
+		// ]),
 	],
 	resolve: {
         extensions: ['.js', '.jsx', '.less', '.scss', '.css'], //后缀名自动补全
@@ -194,25 +208,27 @@ module.exports = {
 
 
 // 遍历所有.html文件，使用HtmlWebpackPlugin将资源文件引入html中
-/*var htmlfiles = fs.readdirSync(HTML_ROOT_PATH);
+const HTML_ROOT_PATH = './src/pages/';
+const htmlfiles = fs.readdirSync(HTML_ROOT_PATH);
 htmlfiles.forEach(function (item) {
-    var currentpath = path.join(HTML_ROOT_PATH, item);
+    let currentpath = path.join(HTML_ROOT_PATH, item);
     //console.log(currentpath);
-    var extname = path.extname(currentpath);
+    let extname = path.extname(currentpath);
     if (fs.statSync(currentpath).isFile()) {
-        //console.log("replace", currentpath.replace("\\html\\", "\\dist\\"))
-        config.plugins.push(new HtmlWebpackPlugin({
-            title: '',
-            template: currentpath,
-            filename: currentpath.replace("\\html\\", "\\dist\\"),
-            minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
-            //chunks: ['index', 'vendors'],   // 配置该html文件要添加的模块
-            inject: 'body'
-        }))
+        config.plugins.push(
+        	new HtmlWebpackPlugin({
+	            title: '',
+	            template: currentpath,
+	            filename: currentpath.replace("src", ""),
+	            minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
+	            //chunks: ['index', 'vendors'],   // 配置该html文件要添加的模块
+	            inject: 'body'
+        	})
+        )
     }
-});*/
+});
 
-
+module.exports = config;
 
 
 

@@ -1,27 +1,32 @@
-const webpack = require('webpack');
-const path = require('path');
-const htmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const fs = require('fs');
 const glob = require('glob');
+const path = require('path');
+const webpack = require('webpack');
+const htmlWebpackPlugin = require('html-webpack-plugin');
+const copyWebpackPlugin = require('copy-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-// 获取 js文件目录下的 所有js文件，返回的是路径 数组
-const files = glob.sync('./src/js/**/*.js');
-let entries = {};
-	files.forEach(function (value, index, arrary) {
-		entries[path.basename(value, '.js')] = value;
-	});
-entries.main = './src/main.js';
+// // 获取 js文件目录下的 所有js文件，返回的是路径 数组
+// const files = glob.sync('./src/js/**/*.js');
+// // entries 如果全是对心方式，则是每个库单独打包，数组则是除主入口，其他库打包到一个文件
+// let entries = {};
+// 	files.forEach(function (value, index, arrary) {
+// 		entries[path.basename(value, '.js')] = value;
+// 	});
 
-module.exports = {
-	// devtool: 'eval-source-map',
+// entries.main = './src/main.js';
+
+let config = {
+	devtool: 'eval-source-map',
 	entry: {
 		main: './src/main.js',
-		venders: files
+		// venders: files
 	}, 
 	output: {
 		// publicPath: '/', 
 		path: path.resolve(__dirname, 'build'),	//打包后的文件存放的地方
-		filename: 'js/[name].js'			//打包后输出文件的文件名
+		filename: 'entry/[name].js',			//打包后输出文件的文件名
 	},
 	module: {
 		rules: [
@@ -37,7 +42,8 @@ module.exports = {
 						{
 							loader: 'css-loader',
 							options: {
-								url: false //启用/禁用url（）处理
+								url: false, //启用/禁用url（）处理
+								minimize: false,
 							}
 						},
 						'postcss-loader'
@@ -57,7 +63,8 @@ module.exports = {
 						{
 							loader: 'css-loader',
 							options: {
-								url: false //启用/禁用url（）处理
+								url: false, //启用/禁用url（）处理
+								minimize: false,
 							}
 						},
 						'postcss-loader', 
@@ -69,7 +76,7 @@ module.exports = {
 				test: /\.(js)$/, 
 				exclude: /node_modules/, 
 				include: [
-					path.resolve(__dirname, 'src/') //main.js src
+					path.resolve(__dirname, 'src/')
 				],
 				loader: 'babel-loader',
 				query: {
@@ -97,9 +104,9 @@ module.exports = {
 			{
 				test: /\.html$/,
 				loader: 'html-loader',
-				options: {
-					minimize: true
-				}
+				// options: {
+				// 	minimize: true
+				// }
 			},
 			{
 				test: /\.(jpe?g|png|gif|svg)$/i,
@@ -130,21 +137,26 @@ module.exports = {
 	},
 	plugins: [
 		
-    	new webpack.optimize.UglifyJsPlugin({
-    		comments: false,        //去掉注释
-	        compress: {
-	            warnings: false    //忽略警告,要不然会有一大堆的黄色字体出现……
-	        }
-    	}), //压缩你的js代码
+    	// new webpack.optimize.UglifyJsPlugin({
+    	// 	comments: false,        //去掉注释
+	    //     compress: {
+	    //         warnings: false    //忽略警告,要不然会有一大堆的黄色字体出现……
+	    //     }
+    	// }), //压缩你的js代码
+    	new CleanWebpackPlugin(['build'],{
+    		root: '', //webpack.config的地址 一个根的绝对路径
+    		verbose: true,// 将log写到 console
+    		// exclude: ["files","to","ignore"] //排除不删除的目录，主要用于避免删除公用的文件
+    	}),
 		new webpack.BannerPlugin('This file is created by pp'),
 		new htmlWebpackPlugin({
 			template:__dirname+'/src/index.html',
 			hash: true,  //给生成的 js 文件一个独特的 hash 值
-			minify: {
+			/*minify: {
 				removeComments: true,        //去注释
 	            collapseWhitespace: true,    //压缩空格
 	            removeAttributeQuotes: true  //去除属性引用
-			},
+			},*/
 			// title: 'Hello World app', // 如果你既指定了 template 选项，又指定了 title 选项,默认模板文件的 title, 即使你的模板文件中未设置 title。
 		    // template: path.resolve(TEM_PATH, 'index.html'),
 		    // filename: 'index.html',
@@ -154,42 +166,79 @@ module.exports = {
 		    // inject: 'head'
 		    // favicon 
 		}),
-		new webpack.HotModuleReplacementPlugin(),
-		new webpack.optimize.CommonsChunkPlugin('venders'),
-		new webpack.ProvidePlugin({ //把一个全局变量插入到所有的代码中
-			$: "jquery",
-			jQuery: "jquery",
-			"window.jQuery": "jquery"
-		}),
+		// new webpack.HotModuleReplacementPlugin(),
+		// new webpack.optimize.CommonsChunkPlugin('venders'),
+		// new webpack.ProvidePlugin({ //把一个全局变量插入到所有的代码中 全局挂载
+		// 	$: "jquery",
+		// 	jQuery: "jquery",
+		// 	"window.jQuery": "jquery",
+		// 	// angular: 'angular',
+		// }),
 		new ExtractTextPlugin({
-			filename:'style/[name]-[id].css',
+			filename:'style/[name]-[hash].css',
 			allChunks: true
-		})
+		}),
+		new copyWebpackPlugin([
+			{
+				from: __dirname+'/src/libs',
+				to: 'libs/'	
+			},
+			{
+				from: __dirname+'/src/style/third_party/',
+				to: 'style/third_party/'	
+			},
+			{
+				from: __dirname+'/src/images/',
+				to: 'images/'	
+			},
+		]),
 	],
 	resolve: {
         extensions: ['.js', '.jsx', '.less', '.scss', '.css'], //后缀名自动补全
+        /*alias: {
+		    jquery        : 'src/assets/jquery-vendor.js' //    将其指向jquery-vendor.js所在位置的 别名
+		} */
     },
-	/*devServer: {
-		contentBase: './src',	//本地服务器所加载的页面所在的目录
-		port: '8080',
-		open: true,
-	    historyApiFallback: true,	//不跳转; 在开发单页应用时非常有用，它依赖于HTML5 history API，如果设置为true，所有的跳转将指向index.html
-	    inline: true,				//实时刷新
-	    // proxy: {
-	    // 	'/api/*':{
-	    // 		target: 'http://m.maoyan.com',
-	    // 		changeOrigin: true,
-	    // 		pathRewrite: {'^/api': ''},
-	    // 	}
-	    // }
-	}*/
+	// devServer: {
+	// 	contentBase: './src',	//本地服务器所加载的页面所在的目录
+	// 	port: '8080',
+	// 	open: true,
+	//     historyApiFallback: true,	//不跳转; 在开发单页应用时非常有用，它依赖于HTML5 history API，如果设置为true，所有的跳转将指向index.html
+	//     inline: true,				//实时刷新
+	//     // proxy: {
+	//     // 	'/api/*':{
+	//     // 		target: 'http://m.maoyan.com',
+	//     // 		changeOrigin: true,
+	//     // 		pathRewrite: {'^/api': ''},
+	//     // 	}
+	//     // }
+	// }
 }
 
 
 
+// 遍历所有.html文件，使用HtmlWebpackPlugin将资源文件引入html中
+const HTML_ROOT_PATH = './src/pages/';
+const htmlfiles = fs.readdirSync(HTML_ROOT_PATH);
+htmlfiles.forEach(function (item) {
+    let currentpath = path.join(HTML_ROOT_PATH, item);
+    //console.log(currentpath);
+    let extname = path.extname(currentpath);
+    if (fs.statSync(currentpath).isFile()) {
+        config.plugins.push(
+        	new HtmlWebpackPlugin({
+	            title: '',
+	            template: currentpath,
+	            filename: currentpath.replace("src", ""),
+	            minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
+	            //chunks: ['index', 'vendors'],   // 配置该html文件要添加的模块
+	            inject: 'body'
+        	})
+        )
+    }
+});
 
-
-
+module.exports = config;
 
 
 

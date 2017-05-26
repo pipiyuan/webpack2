@@ -1,28 +1,4 @@
 import './style/main.less';
-import './style/bootstrap.min.css';
-
-let images = [
-				require('./images/login_banner_1.jpg'),
-				require('./images/login_banner_2.jpg'),
-				require('./images/login_banner_3.jpg'),
-				require('./images/login_banner_4.jpg')
-			];
-
-$(function(){
-	$('.bg-circle').css({'marginLeft':'-'+($('.bg-circle').width()/2+174) + 'px'});
-	$('.bg-circle p').eq(0).css({'background':'#fff'});
-	var num = 1;
-	setInterval(function(){
-		if (num>=$('.bg-circle p').length) {
-			num = 0;
-		}
-		// console.log(num)
-		$('.bg-circle p').css({'background':'#bbb'});
-		$('.bg-circle p').eq(num).css({'background':'#fff'});
-		$('.bodyer').css({'backgroundImage':`url(${images[num]})`});
-		num++;
-	},5000);
-})
 
 $('.title .he-login-title').on('mouseover', function(){
 	$('.item-title-border-bottom').css({left:'20px'}); //保证每次都从一段滑到另一端
@@ -53,6 +29,24 @@ $('.title .item').on('click', function(){
 
 $('.he-login .forget-password a').on('click', function(){
 	$('form .part').hide().eq(2).show();
+});
+
+$('.part .code-button button').on('click', function(){
+
+	$(this).attr('disabled', true);
+	var _this = this;
+	var num = 60;
+	timer();
+
+	function timer() {
+		if (num) {
+			$(_this).text(--num+'s后重试').css('backgroundColor','#ccc');
+			setTimeout(timer, 1000);
+		}else{
+			$(_this).attr('disabled', false).text('发送验证码');
+
+		}
+	}
 })
 
 

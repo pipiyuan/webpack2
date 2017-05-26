@@ -3,10 +3,13 @@
 <head>
 	<title>中移物联网统一办公门户</title>
 	<meta charset="utf-8">
-	<!-- <link rel="stylesheet" type="text/css" href="./style/bootstrap.min.css"> -->
-	<!-- <link rel="stylesheet" type="text/css" href="style/main.css"> -->
-	<!-- <script type="text/javascript" src='js/jquery.min.js'></script>
-	<script type="text/javascript" src='js/jquery.color.js'></script> -->
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<link rel="stylesheet" type="text/css" href="style/third_party/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="style/third_party/flexslider.css">
+	<script type="text/javascript" src='libs/jquery.min.js'></script>
+	<script type="text/javascript" src='libs/jquery.color.js'></script>
+	<script type="text/javascript" src='libs/jquery.flexslider.js'></script>
 	<!-- <script type="text/javascript" src='javascript/main.js'></script> -->
 </head>
 <body>
@@ -20,7 +23,15 @@
 		</div>
 	</nav>
 	<section class="bodyer">
-		<div class="bg container-1200">
+		<div class="flexslider">
+		  <ul class="slides">
+		    <li style="background: url('./images/login_banner_1.jpg') no-repeat center top;"></li>
+		    <li style="background: url('./images/login_banner_2.jpg') no-repeat center top;"></li>
+		    <li style="background: url('./images/login_banner_3.jpg') no-repeat center top;"></li>
+		    <li style="background: url('./images/login_banner_4.jpg') no-repeat center top;"></li>
+		  </ul>
+		</div>
+		<div class="part-form container-1200">
 			<form>
 				<div class="title clearfix">
 					<div class="item protal-login-title" data-state="1">办公门户账号登录</div>
@@ -34,20 +45,25 @@
 					<div class="input">					
 						<p>
 							<!-- <i></i> -->
-							<input type="text" name="" placeholder="请输入用户名">
+							<input class="account-password" type="text" name="" autofocus placeholder="请输入用户名">
 						</p>
 						<p>
 							<!-- <i></i> -->
-							<input type="password" name="" placeholder="请输入密码">
+							<input class="account-password" type="password" name=""placeholder="请输入密码">
 						</p>
 						<div class="verification_code clearfix">
 							<p>
-								<input type="text" name="" placeholder="请输入验证码">
+								<input type="text" name="" maxlength="4" placeholder="请输入验证码">
 							</p>
 							<div class="code-button">
-								<button>发送验证码</button>
+								<button type="button">发送验证码</button>
 							</div>
 						</div>
+					</div>
+					<div class="note">
+						<i></i>
+						<span>账号或密码错误</span>
+						<span>验证码错误</span>
 					</div>
 					<div class="submit-btn">
 						<button class="btn">立即登录</button>
@@ -69,9 +85,14 @@
 								<input type="text" name="" placeholder="请输入通行证验证码">
 							</p>
 							<div class="code-button">
-								<button>发送验证码</button>
+								<button type="button">发送验证码</button>
 							</div>
 						</div>
+					</div>
+					<div class="note">
+						<i></i>
+						<span>账号或密码错误</span>
+						<span>验证码错误</span>
 					</div>
 					<div class="submit-btn">
 						<button class="btn">立即登录</button>
@@ -102,12 +123,12 @@
 					</div>
 				</div>
 			</form>
-			<div class="bg-circle">
+			<!-- <div class="bg-circle">
 				<p></p>
 				<p></p>
 				<p></p>
 				<p></p>
-			</div>
+			</div> -->
 		</div>
 	</section>
 	<footer class="container-1200">
@@ -118,8 +139,11 @@
 					<i></i>
 				</div>
 				<div class="qr-code">
-					<a href="">移动端APP下载</a>
-					<img src="images/Qr_code.jpg">
+					<a href="javascript:void(0);">物联家APP下载</a>
+					<div class="app-code">
+						<span></span>
+						<img src="images/Qr_code.jpg">
+					</div>
 				</div>
 			</div>
 			<div class="item2">
@@ -130,4 +154,22 @@
 		</div>
 	</footer>
 </body>
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+  	$('input').val('');
+  	$('.account-password').on('keyup',function(){
+  		if ($('.account-password').eq(0).val()&&$('.account-password').eq(1).val()) {
+  			$('.protal-login .code-button button').addClass('state');
+  		}else{
+  			$('.protal-login .code-button button').removeClass('state');
+  		}
+  	})
+    $('.flexslider').flexslider({
+	    animation: "slide",
+	    directionNav: false,
+	    slideshow: true,
+	    slideshowSpeed: 6000           
+	});
+  });
+</script>
 </html>
