@@ -211,21 +211,20 @@ let config = {
 const HTML_ROOT_PATH = './src/pages/';
 const pagesState = fs.existsSync(HTML_ROOT_PATH); // 判断 pages 文件目录是否存在
 if (pagesState) {
-	const htmlfiles = fs.readdirSync(HTML_ROOT_PATH);
-	htmlfiles.forEach(function (item) {
-	    let currentpath = path.join(HTML_ROOT_PATH, item);
-	    //console.log(currentpath);
-	    let extname = path.extname(currentpath);
-	    if (fs.statSync(currentpath).isFile()) {
-	    	if (path.extname(currentpath) === "html" || path.extname(currentpath) === "jade" || path.extname(currentpath) === "pug") {
+	const files = glob.sync(HTML_ROOT_PATH + '/**/*');
+	files.forEach(function (file) {
+	    if (fs.statSync(file).isFile()) {
+	    	let extname = path.extname(file);
+	    	if (extname === ".html" || extname === ".jade" || extname === ".pug") {
+	    		// console.log(file);
 		        config.plugins.push(
-		        	new HtmlWebpackPlugin({
+		        	new htmlWebpackPlugin({
 			            title: '',
-			            template: currentpath,
-			            filename: currentpath.replace("src", ""),
-			            minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
+			            template: file,
+			            filename: file.replace("src", "").replace(path.extname(file), ".html"),
+			            // minify: isprod ? htmlMinifyOptions : false, // 生产模式下压缩html文件
 			            //chunks: ['index', 'vendors'],   // 配置该html文件要添加的模块
-			            inject: 'body'
+			            // inject: 'body'
 		        	})
 		        )
 		    }

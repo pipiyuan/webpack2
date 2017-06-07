@@ -36,6 +36,7 @@ $('.part .code-button button').on('click', function(){
 	$(this).attr('disabled', true);
 	var _this = this;
 	var num = 60;
+	$('.verification_code input').focus();
 	timer();
 
 	function timer() {
@@ -49,5 +50,26 @@ $('.part .code-button button').on('click', function(){
 	}
 })
 
+
+$('input').on('keydown', function(evt){
+	var e = evt || event;
+	if (e.keyCode === 13) {
+		var first_inputState = $('form .part').eq(0).css('display');
+		var two_inputState = $('form .part').eq(1).css('display');
+		var three_inputState = $('form .part').eq(2).css('display');
+
+		if (first_inputState == 'block') {
+            console.log(111); // 此处写 办公门户的提交
+        }
+        if (two_inputState == 'block') {
+            console.log(222); // 此处写 和通行证的提交
+        }
+        if (three_inputState == 'block') {
+            console.log(333); // 此处写 初始化密码的提交
+        }
+
+	}
+ 	return false;
+});
 
 
