@@ -191,7 +191,8 @@ let config = {
     },
 	devServer: {
 		contentBase: './src',	//本地服务器所加载的页面所在的目录
-		port: '8080',
+		// host: '0.0.0.0',		//默认只能localhost 本机访问，如果希望局域网内其它机器访问进行测试 需要修改 添加本地 ip
+		port: '8080',			
 		open: true,
 	    historyApiFallback: true,	//不跳转; 在开发单页应用时非常有用，它依赖于HTML5 history API，如果设置为true，所有的跳转将指向index.html
 	    inline: true,				//实时刷新
